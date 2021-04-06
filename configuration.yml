@@ -29,6 +29,7 @@
     ansible.builtin.package:
       name: dnsmasq
       state: latest
+    notify: Restart dnsmasq
   - name: Set local hostname
     ansible.builtin.lineinfile:
       path: /etc/hosts
@@ -46,9 +47,10 @@
       owner: root
       group: root
       mode: "0644"
+    notify: Restart dnsmasq
+  handlers:
   - name: Restart dnsmasq
     ansible.builtin.service:
       name: dnsmasq
       enabled: yes
       state: restarted
-  
