@@ -28,7 +28,7 @@
   - name: Disable existing DNS
     ansible.builtin.service:
       name: systemd-resolved
-      status: stopped
+      state: stopped
   - name: Install dnsmasq
     ansible.builtin.package:
       name: dnsmasq
