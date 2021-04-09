@@ -20,6 +20,14 @@
       stig_version: rhel7
       security_enable_pwquality_password_set: yes
       security_password_max_lifetime_days: 90
+  tasks:
+  - name: Add local hostname
+    lineinfile:
+      dest: /etc/hosts
+      regexp: '.*{{ansible_hostname}}$'
+      line: "{{ansible_host}} {{ansible_hostname}}"
+      state: present
+    when: ansible_host is defined
 
 - name: Configure DNS Server
   hosts: ansible-lab-host1
@@ -32,11 +40,11 @@
       state: latest
     notify: Restart dnsmasq
 
-  - name: Set local hostname
-    ansible.builtin.lineinfile:
-      path: /etc/hosts
-      regexp: '^10\.1\.2\.4'
-      line: '10.1.2.4 localhost {{ ansible_hostname }}'
+  # - name: Set local hostname
+  #   ansible.builtin.lineinfile:
+  #     path: /etc/hosts
+  #     regexp: '^10\.1\.2\.4'
+  #     line: '10.1.2.4 localhost {{ ansible_hostname }}'
   # - name: Set host2
   #   ansible.builtin.lineinfile:
   #      path: /etc/hosts
@@ -52,6 +60,7 @@
   #      path: /etc/hosts
   #      regexp: '^10\.1\.1\.4'
   #      line: '10.1.1.4 ansible-lab-controller'
+  
   - name: Add all hosts and controller to hostfile
     ansible.builtin.lineinfile:
       dest: /etc/hosts
