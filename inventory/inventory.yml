@@ -4,7 +4,7 @@ all:
       ansible_host: localhost
       ansible_connection: local
   children:
-    az-lab:
+    az_lab:
       children:
         ansible_lab_hosts:
           hosts:
