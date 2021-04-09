@@ -97,8 +97,8 @@
   vars:
     ansible_become: true
   tasks:
-    -name: Configure resolv.conf for all hosts and controller
-      ansible.builtin.lineinfile:
+  - name: Configure resolv.conf for all hosts and controller
+    ansible.builtin.lineinfile:
         path: /etc/resolv.conf
         regexp: '^nameserver'
         line: 'nameserver 10.1.2.4'
