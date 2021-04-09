@@ -25,13 +25,6 @@
   hosts: ansible-lab-host1
   vars:
     ansible_become: true
-  roles:
-  - role: bertvv.dnsmasq
-    vars:
-      dnsmasq_bogus_priv: true
-      dnsmasq_upstream_servers:
-      - 8.8.4.4
-      - 8.8.8.8
   tasks:
   - name: Install dnsmasq
     ansible.builtin.package:
@@ -67,6 +60,14 @@
     ansible.builtin.copy:
       src: ./files/dnsmasq.conf
       dest: /etc/dnsmasq.conf
+      owner: root
+      group: root
+      mode: "0644"
+    notify: Restart dnsmasq
+  - name: Set dnsmasq upstream server configuration file
+    ansible.builtin.copy:
+      src: ./files/resolv.conf
+      dest: /etc/resolv.conf
       owner: root
       group: root
       mode: "0644"
