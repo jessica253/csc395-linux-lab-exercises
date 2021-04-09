@@ -60,7 +60,7 @@
   #      path: /etc/hosts
   #      regexp: '^10\.1\.1\.4'
   #      line: '10.1.1.4 ansible-lab-controller'
-  
+
   - name: Add all hosts and controller to hostfile
     ansible.builtin.lineinfile:
       dest: /etc/hosts
@@ -70,11 +70,11 @@
     when: hostvars[item].ansible_host is defined
     with_items: "{{ groups['az_lab'] }}"
 
-  # - name: Disable existing DNS
-  #   ansible.builtin.service:
-  #     name: systemd-resolved
-  #     enabled: no
-  #     state: stopped
+  - name: Disable existing DNS
+    ansible.builtin.service:
+      name: systemd-resolved
+      enabled: no
+      state: stopped
 
   - name: Set dnsmasq configuration file
     ansible.builtin.copy:
