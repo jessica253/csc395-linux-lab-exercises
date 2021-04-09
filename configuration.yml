@@ -31,31 +31,42 @@
       name: dnsmasq
       state: latest
     notify: Restart dnsmasq
+
   - name: Set local hostname
     ansible.builtin.lineinfile:
       path: /etc/hosts
       regexp: '^10\.1\.2\.4'
       line: '10.1.2.4 localhost {{ ansible_hostname }}'
-  - name: Set host2
+  # - name: Set host2
+  #   ansible.builtin.lineinfile:
+  #      path: /etc/hosts
+  #      regexp: '^10\.1\.2\.5'
+  #      line: '10.1.2.5 ansible-lab-host2'
+  # - name: Set host3
+  #   ansible.builtin.lineinfile:
+  #      path: /etc/hosts
+  #      regexp: '^10\.1\.2\.6'
+  #      line: '10.1.2.6 ansible-lab-host3'
+  # - name: Set controller
+  #   ansible.builtin.lineinfile:
+  #      path: /etc/hosts
+  #      regexp: '^10\.1\.1\.4'
+  #      line: '10.1.1.4 ansible-lab-controller'
+  - name: Add all hosts and controller to hostfile
     ansible.builtin.lineinfile:
-       path: /etc/hosts
-       regexp: '^10\.1\.2\.5'
-       line: '10.1.2.5 ansible-lab-host2'
-  - name: Set host3
-    ansible.builtin.lineinfile:
-       path: /etc/hosts
-       regexp: '^10\.1\.2\.6'
-       line: '10.1.2.6 ansible-lab-host3'
-  - name: Set controller
-    ansible.builtin.lineinfile:
-       path: /etc/hosts
-       regexp: '^10\.1\.1\.4'
-       line: '10.1.1.4 ansible-lab-controller'
-  - name: Disable existing DNS
-    ansible.builtin.service:
-      name: systemd-resolved
-      enabled: no
-      state: stopped
+      dest: /etc/hosts
+      regexp: '.*{{ item }}$'
+      line: "{{ hostvars[item].ansible_host }} {{item}}"
+      state: present
+    when: hostvars[item].ansible_host is defined
+    with_items: "{{ groups['az_lab'] }}"
+
+  # - name: Disable existing DNS
+  #   ansible.builtin.service:
+  #     name: systemd-resolved
+  #     enabled: no
+  #     state: stopped
+
   - name: Set dnsmasq configuration file
     ansible.builtin.copy:
       src: ./files/dnsmasq.conf
@@ -64,12 +75,14 @@
       group: root
       mode: "0644"
     notify: Restart dnsmasq
+
   - name: Set host to use local DNS
     ansible.builtin.lineinfile:
       path: /etc/resolv.conf
       regexp: '^nameserver'
       line: 'nameserver 10.1.2.4'
     notify: Restart dnsmasq
+
   handlers:
   - name: Restart dnsmasq
     ansible.builtin.service:
