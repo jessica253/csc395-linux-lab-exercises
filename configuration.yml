@@ -64,13 +64,11 @@
       group: root
       mode: "0644"
     notify: Restart dnsmasq
-  - name: Set dnsmasq upstream server configuration file
-    ansible.builtin.copy:
-      src: ./files/resolv.conf
-      dest: /etc/resolv.conf
-      owner: root
-      group: root
-      mode: "0644"
+  - name: Set host to use local DNS
+    ansible.builtin.lineinfile:
+      path: /etc/resolv.conf
+      regexp: '^nameserver'
+      line: 'nameserver 10.1.2.4'
     notify: Restart dnsmasq
   handlers:
   - name: Restart dnsmasq
