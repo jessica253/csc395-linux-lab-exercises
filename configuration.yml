@@ -15,6 +15,7 @@
     ansible_become: true
   roles:
   - role: ansible-hardening
+    tags: hardening
     vars:
       stig_version: rhel7
       security_enable_pwquality_password_set: yes
@@ -24,6 +25,13 @@
   hosts: ansible-lab-host1
   vars:
     ansible_become: true
+  roles:
+  - role: bertvv.dnsmasq
+    vars:
+      dnsmasq_bogus_priv: true
+      dnsmasq_upstream_servers:
+      - 8.8.4.4
+      - 8.8.8.8
   tasks:
   - name: Install dnsmasq
     ansible.builtin.package:
@@ -35,6 +43,21 @@
       path: /etc/hosts
       regexp: '^10\.1\.2\.4'
       line: '10.1.2.4 localhost {{ ansible_hostname }}'
+  - name: Set host2
+    ansible.builtin.lineinfile:
+       path: /etc/hosts
+       regexp: '^10\.1\.2\.5'
+       line: '10.1.2.5 ansible-lab-host2'
+  - name: Set host3
+    ansible.builtin.lineinfile:
+       path: /etc/hosts
+       regexp: '^10\.1\.2\.6'
+       line: '10.1.2.6 ansible-lab-host3'
+  - name: Set controller
+    ansible.builtin.lineinfile:
+       path: /etc/hosts
+       regexp: '^10\.1\.1\.4'
+       line: '10.1.1.4 ansible-lab-controller'
   - name: Disable existing DNS
     ansible.builtin.service:
       name: systemd-resolved
