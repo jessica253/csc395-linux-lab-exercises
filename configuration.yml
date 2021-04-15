@@ -128,13 +128,13 @@
       mode: '0600'
   - name: Add share mount
     mount:
-      src: //10.1.2.5/file_share
-      path: /mnt/smbshare
+      src: //10.1.2.5/samba_share
+      path: /mnt/sambaShare
       fstype: cifs
       opts: credentials=/home/{{ admin_un }}/.smbpasswd
       state: mounted
   - name: Set mount as writeable
     file:
-      path: /mnt/smbshare
+      path: /mnt/sambaShare
       state: directory
       mode: '0777'
