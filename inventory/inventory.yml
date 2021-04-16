@@ -6,10 +6,6 @@ all:
   children:
     az_lab:
       children:
-        ansible_lab_controller:
-          hosts:
-            ansible-lab-controller:
-              ansible_host: 10.1.1.4
         ansible_lab_hosts:
           hosts:
             ansible-lab-host1:
@@ -18,4 +14,7 @@ all:
               ansible_host: 10.1.2.5
             ansible-lab-host3:
               ansible_host: 10.1.2.6
-        
+        ansible_lab_controller:
+          hosts:
+            ansible-lab-controller:
+              ansible_host: 10.1.1.4
