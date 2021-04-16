@@ -1,14 +1,15 @@
 ---
-# - name: Configuration Ansible Controller
-#   hosts: ansible-lab-controller
-#   tasks:
-#     - name: Ensure latest Ansible version
-#       become: yes
-#       ansible.builtin.package:
-#         name:
-#           - ansible
-#           - git
-#         state: latest
+- name: Configuration Ansible Controller
+  hosts: ansible-lab-controller
+  tasks:
+    - name: Ensure latest Ansible version
+      become: yes
+      ansible.builtin.package:
+        name:
+          - ansible
+          - git
+        state: latest
+        
 - name: Universal host configuration
   hosts: ansible_lab_hosts
   vars:
