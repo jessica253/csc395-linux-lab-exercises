@@ -18,4 +18,3 @@ all:
               ansible_host: 10.1.2.5
             ansible-lab-host3:
               ansible_host: 10.1.2.6
-        
