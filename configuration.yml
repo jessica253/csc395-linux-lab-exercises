@@ -165,7 +165,7 @@
   - name: Copy website files
     copy:
       src: ./website
-      dest: /srv/www/lostsauce
+      dest: /var/www/html/
       owner: '{{ admin_un }}'
       group: '{{ admin_un }}'
       mode: '0777'
