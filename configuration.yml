@@ -116,10 +116,12 @@
   vars:
     ansible_become: true
   tasks:
+
   - name: Install client deps
     package:
       name: cifs-utils
       state: latest
+
   - name: Create credential file
     template:
       src: ./files/.smbpasswd
@@ -127,6 +129,7 @@
       owner: '{{ admin_un }}'
       group: '{{ admin_un }}'
       mode: '0600'
+
   - name: Add share mount
     mount:
       src: //10.1.2.5/samba_share
@@ -134,8 +137,39 @@
       fstype: cifs
       opts: credentials=/home/{{ admin_un }}/.smbpasswd
       state: mounted
+
   - name: Set mount as writeable
     file:
       path: /mnt/sambaShare
       state: directory
       mode: '0777'
+
+  - name: install apache2
+    apt: name=apache2 update_cache=yes state=latest
+
+  - name: enabled mod_rewrite
+      apache2_module: name=rewrite state=present
+      notify:
+        - restart apache2
+
+  - name: apache2 listen on port 8081
+      lineinfile: dest=/etc/apache2/ports.conf regexp="^Listen 80" line="Listen 8081" state=present
+      notify:
+        - restart apache2
+
+  - name: apache2 virtualhost on port 8081
+      lineinfile: dest=/etc/apache2/sites-available/000-default.conf regexp="^<VirtualHost \*:80>" line="<VirtualHost *:8081>" state=present
+      notify:
+        - restart apache2
+        
+  - name: Copy website files
+    copy:
+      src: ./website
+      dest: /srv/www
+      owner: '{{ admin_un }}'
+      group: '{{ admin_un }}'
+      mode: '0777'
+  
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted
