@@ -38,6 +38,13 @@
         access: Deny
         priority: 103
         direction: Inbound
+      - name: 'AllowOpenVPN'
+        protocol: Udp
+        source_address_prefix: 0.0.0.0/0
+        destination_port_range: 1194
+        access: Allow
+        priority: 105
+        direction: Inbound
   - name: 'Create {{ controller_subnet_name }}'
     azure.azcollection.azure_rm_subnet:
       name: '{{ controller_subnet_name }}'

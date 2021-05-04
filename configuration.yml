@@ -41,27 +41,6 @@
       state: latest
     notify: Restart dnsmasq
 
-  # - name: Set local hostname
-  #   ansible.builtin.lineinfile:
-  #     path: /etc/hosts
-  #     regexp: '^10\.1\.2\.4'
-  #     line: '10.1.2.4 localhost {{ ansible_hostname }}'
-  # - name: Set host2
-  #   ansible.builtin.lineinfile:
-  #      path: /etc/hosts
-  #      regexp: '^10\.1\.2\.5'
-  #      line: '10.1.2.5 ansible-lab-host2'
-  # - name: Set host3
-  #   ansible.builtin.lineinfile:
-  #      path: /etc/hosts
-  #      regexp: '^10\.1\.2\.6'
-  #      line: '10.1.2.6 ansible-lab-host3'
-  # - name: Set controller
-  #   ansible.builtin.lineinfile:
-  #      path: /etc/hosts
-  #      regexp: '^10\.1\.1\.4'
-  #      line: '10.1.1.4 ansible-lab-controller'
-
   - name: Add all hosts and controller to hostfile
     ansible.builtin.lineinfile:
       dest: /etc/hosts
@@ -144,6 +123,11 @@
       state: directory
       mode: '0777'
 
+- name: Install Apache2
+  hosts: ansible-lab-host3
+  vars:
+    ansible_become: true
+  tasks:
   - name: install apache2
     apt: name=apache2 update_cache=yes state=latest
 
@@ -161,10 +145,19 @@
     lineinfile: dest=/etc/apache2/sites-available/000-default.conf regexp="^<VirtualHost \*:80>" line="<VirtualHost *:8081>" state=present
     notify:
         - restart apache2
-        
+
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted
+
+- name: Copy Custom Website
+  hosts: ansible-lab-host3
+  vars:
+    ansible_become: true
+  tasks:
   - name: Copy website files
     copy:
-      src: ./website
+      src: ./files/index.html
       dest: /var/www/html/
       owner: '{{ admin_un }}'
       group: '{{ admin_un }}'
@@ -173,3 +166,13 @@
   handlers:
     - name: restart apache2
       service: name=apache2 state=restarted
+
+- name: Install OpenVPN
+  hosts: ansible-lab-controller
+  gather_facts: true
+  vars:
+    ansible_become: true
+    openvpn_server_hostname: 13.91.102.77
+  roles:
+  - role: ansible-role-openvpn
+    clients: client1
