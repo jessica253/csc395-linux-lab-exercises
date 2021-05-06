@@ -169,6 +169,8 @@
   vars:
     ansible_become: true
     openvpn_server_hostname: 13.91.102.77
+    openvpn_service_user: '{{ admin_un }}'
+    openvpn_service_group: '{{ admin_un }}'
   roles:
   - role: ansible-role-openvpn
     clients: client1
