@@ -123,24 +123,17 @@
       state: directory
       mode: '0777'
 
-- name: Install Apache2
+- name: Install nginx 
   hosts: ansible-lab-host3
   vars:
     ansible_become: true
   tasks:
-  - name: install apache2
-    apt: name=apache2 update_cache=yes state=latest
-
-  - name: enabled mod_rewrite
-    apache2_module: name=rewrite state=present
-    notify:
-        - restart apache2
-        
-  - name: "UFW firewall allow HTTP on port 80"
-    ufw:
-      rule: allow
-      port: 80
-      proto: tcp
+  - name: Install latest nginx
+    apt: name=nginx state=latest
+  - name: start nginx
+    service:
+        name: nginx
+        state: started
 
   handlers:
     - name: restart apache2
