@@ -99,7 +99,7 @@
       - name: 'AllowHTTP'
         protocol: Tcp
         source_address_prefix: 0.0.0.0/0
-        destination_port_range: 80
+        destination_port_range: 8081
         access: Allow
         priority: 105
         direction: Inbound
